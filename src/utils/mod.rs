@@ -61,7 +61,7 @@ impl From<ParseFloatError> for ParseError {
 }
 
 impl From<ParseError> for Error {
-  fn from(_error: ParseError) -> Self {
-    Error::new("Unable to parse something")
+  fn from(error: ParseError) -> Self {
+    Error::new(&format!("Unable to parse something: {}", error))
   }
 }
