@@ -1,6 +1,8 @@
 use crate::utils::Error;
+use std::iter::FromIterator;
 
 type Passphrase<'a> = Vec<&'a str>;
+type OwnedPassphrase = Vec<String>;
 
 fn get_input() -> Vec<Passphrase<'static>> {
     let input = include_str!("./input");
@@ -11,7 +13,8 @@ fn get_input() -> Vec<Passphrase<'static>> {
         .collect::<Vec<_>>()
 }
 
-fn is_valid(p: &Passphrase) -> bool {
+fn is_valid<T>(p: &Vec<T>) -> bool
+    where T: Clone + Ord {
     let mut passphrase = p.clone();
     passphrase.sort();
 
@@ -33,8 +36,33 @@ pub fn problem1() -> Result<(), Error> {
     Ok(())
 }
 
+fn normalize_word(word: &str) -> String {
+    let mut w = word.chars().collect::<Vec<_>>();
+    w.sort();
+
+    String::from_iter(w.iter())
+}
+
+fn normalize(passes: &Passphrase) -> OwnedPassphrase {
+    passes.iter()
+        .map(|v| normalize_word(v))
+        .collect::<Vec<_>>()
+}
+
+fn is_valid_considering_anagrams(p: &Passphrase) -> bool {
+    let normalized = normalize(p);
+    is_valid(&normalized)
+}
+
 pub fn problem2() -> Result<(), Error> {
     let input = get_input();
+
+    let result = input.iter()
+        .map(|p| is_valid_considering_anagrams(&p))
+        .filter(|v| *v)
+        .count();
+
+    println!("4/2: # of valid passphrases considering anagrams: {}", result);
 
     Ok(())
 }
@@ -59,5 +87,35 @@ mod test {
     pub fn example_1_3() {
         let p = vec!["aa", "bb", "cc", "dd", "aaa"];
         assert_eq!(true, is_valid(&p));
+    }
+
+    #[test]
+    pub fn example_2_1() {
+        let p = vec!["abcde", "fghij"];
+        assert_eq!(true, is_valid_considering_anagrams(&p));
+    }
+
+    #[test]
+    pub fn example_2_2() {
+        let p = vec!["abcde", "xyz", "ecdab"];
+        assert_eq!(false, is_valid_considering_anagrams(&p));
+    }
+
+    #[test]
+    pub fn example_2_3() {
+        let p = vec!["a", "ab", "abc", "abf", "abj"];
+        assert_eq!(true, is_valid_considering_anagrams(&p));
+    }
+
+    #[test]
+    pub fn example_2_4() {
+        let p = vec!["iiii", "oiii", "ooii", "oooi"];
+        assert_eq!(true, is_valid_considering_anagrams(&p));
+    }
+
+    #[test]
+    pub fn example_2_5() {
+        let p = vec!["oiii", "ioii", "iioi", "iiio"];
+        assert_eq!(false, is_valid_considering_anagrams(&p));
     }
 }
