@@ -47,7 +47,7 @@ fn redistribute(mut pos: usize, mem: &mut Vec<i32>) {
     }
 }
 
-fn repeated_redistribution(input: &Vec<i32>) -> usize {
+fn repeated_redistribution(input: &Vec<i32>) -> (usize, usize) {
     let mut visited = vec![];
     let mut count = 0;
     let mut current = input.clone();
@@ -59,20 +59,29 @@ fn repeated_redistribution(input: &Vec<i32>) -> usize {
         count += 1;
     }
 
-    count
+    let cycle = if let Some(v) = visited.iter().position(|v| v == &current) {
+        count - v
+    } else {
+        0
+    };
+
+    (count, cycle)
 }
 
 pub fn problem1() -> Result<(), ParseError> {
     let input = get_input()?;
 
-    let result = repeated_redistribution(&input);
-    println!("6/1: result: {}", result);
+    let (result, _) = repeated_redistribution(&input);
+    println!("6/1: # of iterations: {}", result);
 
     Ok(())
 }
 
 pub fn problem2() -> Result<(), Error> {
     let input = get_input()?;
+
+    let (_, cycle) = repeated_redistribution(&input);
+    println!("6/2: cycle size: {}", cycle);
 
     Ok(())
 }
