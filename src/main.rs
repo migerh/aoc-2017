@@ -3,11 +3,12 @@
 mod day1;
 mod day2;
 mod day3;
+mod day4;
 mod utils;
 
 fn run() -> Result<(), utils::Error> {
-    day3::problem1()?;
-    day3::problem2()?;
+    day4::problem1()?;
+    day4::problem2()?;
 
     Ok(())
 }
