@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use std::cmp::min;
 use crate::utils::Error;
 
@@ -84,10 +85,47 @@ pub fn problem1() -> Result<(), Error> {
     Ok(())
 }
 
+fn sum_neighbors(map: &HashMap<(i32, i32), i32>, coords: (i32, i32)) -> i32 {
+    let mut sum = 0;
+    for y in -1..=1 {
+        for x in -1..=1 {
+            if y == 0 && x == 0 {
+                continue;
+            }
+
+            if let Some(v) = map.get(&(coords.0 + x, coords.1 + y)) {
+                sum += v;
+            }
+        }
+    }
+
+    sum
+}
+
+fn squared_fibonacci(target: i32) -> i32 {
+    let mut current = 1;
+    let mut position = 1;
+    let mut map: HashMap<(i32, i32), i32> = HashMap::new();
+
+    map.entry((0, 0)).or_insert(1);
+
+    while current <= target {
+        if let Some(coords) = translate_coordinates(position) {
+            let value = sum_neighbors(&map, coords);
+            map.entry(coords).or_insert(value);
+            current = value;
+        }
+        position += 1;
+    }
+
+    current
+}
+
 pub fn problem2() -> Result<(), Error> {
     let input = 347991;
 
-    println!("input: {}", input);
+    let result = squared_fibonacci(input);
+    println!("3/2: first number larger than input is: {}", result);
 
     Ok(())
 }
@@ -95,6 +133,16 @@ pub fn problem2() -> Result<(), Error> {
 #[cfg(test)]
 mod test {
     use super::*;
+
+    #[test]
+    pub fn example_2_1() {
+        assert_eq!(11, squared_fibonacci(10));
+    }
+
+    #[test]
+    pub fn example_2_2() {
+        assert_eq!(806, squared_fibonacci(748));
+    }
 
     #[test]
     pub fn find_squares_1_returns_0_and_1() {
