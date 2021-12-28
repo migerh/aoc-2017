@@ -1,6 +1,11 @@
+use crate::utils::ParseError;
 use std::collections::HashMap;
 use std::cmp::min;
-use crate::utils::Error;
+
+#[aoc_generator(day3)]
+fn input_generator(input: &str) -> Result<i32, ParseError> {
+    Ok(input.parse::<i32>()?)
+}
 
 fn find_squares(target: i32) -> Option<(i32, i32)> {
     if target == 1 {
@@ -73,16 +78,11 @@ fn distance(target: i32) -> Option<i32> {
     }
 }
 
-pub fn problem1() -> Result<(), Error> {
-    let input = 347991;
+#[aoc(day3, part1)]
+pub fn problem1(input: &i32) -> Result<i32, ParseError> {
+    let result = distance(*input).ok_or(ParseError::new("Could not determine distance"))?;
 
-    if let Some(result) = distance(input) {
-        println!("3/1: distance: {}", result);
-    } else {
-        println!("3/1: Could not determine distance");
-    }
-
-    Ok(())
+    Ok(result)
 }
 
 fn sum_neighbors(map: &HashMap<(i32, i32), i32>, coords: (i32, i32)) -> i32 {
@@ -121,13 +121,11 @@ fn squared_fibonacci(target: i32) -> i32 {
     current
 }
 
-pub fn problem2() -> Result<(), Error> {
-    let input = 347991;
+#[aoc(day3, part2)]
+pub fn problem2(input: &i32) -> Result<i32, ParseError> {
+    let result = squared_fibonacci(*input);
 
-    let result = squared_fibonacci(input);
-    println!("3/2: first number larger than input is: {}", result);
-
-    Ok(())
+    Ok(result)
 }
 
 #[cfg(test)]

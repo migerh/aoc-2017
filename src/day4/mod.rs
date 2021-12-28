@@ -1,15 +1,14 @@
-use crate::utils::Error;
+use crate::utils::ParseError;
 use std::iter::FromIterator;
 
-type Passphrase<'a> = Vec<&'a str>;
+type Passphrase = Vec<String>;
 type OwnedPassphrase = Vec<String>;
 
-fn get_input() -> Vec<Passphrase<'static>> {
-    let input = include_str!("./input");
-
+#[aoc_generator(day4)]
+fn get_input(input: &str) -> Vec<Passphrase> {
     input
         .lines()
-        .map(|p| p.split(' ').collect::<Vec<_>>())
+        .map(|p| p.split(' ').map(|s| s.to_owned()).collect::<Vec<_>>())
         .collect::<Vec<_>>()
 }
 
@@ -23,17 +22,14 @@ fn is_valid<T>(p: &Vec<T>) -> bool
         .fold(true, |acc, value| acc && (value.0 != value.1))
 }
 
-pub fn problem1() -> Result<(), Error> {
-    let input = get_input();
-
+#[aoc(day4, part1)]
+pub fn problem1(input: &Vec<Passphrase>) -> Result<usize, ParseError> {
     let result = input.iter()
         .map(|p| is_valid(p))
         .filter(|v| *v)
         .count();
 
-    println!("4/1: # of valid passphrases: {}", result);
-
-    Ok(())
+    Ok(result)
 }
 
 fn normalize_word(word: &str) -> String {
@@ -54,17 +50,14 @@ fn is_valid_considering_anagrams(p: &Passphrase) -> bool {
     is_valid(&normalized)
 }
 
-pub fn problem2() -> Result<(), Error> {
-    let input = get_input();
-
+#[aoc(day4, part2)]
+pub fn problem2(input: &Vec<Passphrase>) -> Result<usize, ParseError> {
     let result = input.iter()
         .map(|p| is_valid_considering_anagrams(&p))
         .filter(|v| *v)
         .count();
 
-    println!("4/2: # of valid passphrases considering anagrams: {}", result);
-
-    Ok(())
+    Ok(result)
 }
 
 #[cfg(test)]
@@ -91,31 +84,31 @@ mod test {
 
     #[test]
     pub fn example_2_1() {
-        let p = vec!["abcde", "fghij"];
+        let p = vec!["abcde".to_owned(), "fghij".to_owned()];
         assert_eq!(true, is_valid_considering_anagrams(&p));
     }
 
     #[test]
     pub fn example_2_2() {
-        let p = vec!["abcde", "xyz", "ecdab"];
+        let p = vec!["abcde".to_owned(), "xyz".to_owned(), "ecdab".to_owned()];
         assert_eq!(false, is_valid_considering_anagrams(&p));
     }
 
     #[test]
     pub fn example_2_3() {
-        let p = vec!["a", "ab", "abc", "abf", "abj"];
+        let p = vec!["a".to_owned(), "ab".to_owned(), "abc".to_owned(), "abf".to_owned(), "abj".to_owned()];
         assert_eq!(true, is_valid_considering_anagrams(&p));
     }
 
     #[test]
     pub fn example_2_4() {
-        let p = vec!["iiii", "oiii", "ooii", "oooi"];
+        let p = vec!["iiii".to_owned(), "oiii".to_owned(), "ooii".to_owned(), "oooi".to_owned()];
         assert_eq!(true, is_valid_considering_anagrams(&p));
     }
 
     #[test]
     pub fn example_2_5() {
-        let p = vec!["oiii", "ioii", "iioi", "iiio"];
+        let p = vec!["oiii".to_owned(), "ioii".to_owned(), "iioi".to_owned(), "iiio".to_owned()];
         assert_eq!(false, is_valid_considering_anagrams(&p));
     }
 }

@@ -1,12 +1,11 @@
-use crate::utils::Error;
+use crate::utils::ParseError;
 
-fn load_numbers() -> Result<Vec<u32>, Error> {
-    let input = include_str!("./input");
-
+#[aoc_generator(day1)]
+fn load_numbers(input: &str) -> Result<Vec<u32>, ParseError> {
     input.chars()
         .filter(|c| c != &'\n' && c != &'\r')
-        .map(|c| c.to_digit(10).ok_or(Error::new(&format!("Could not parse '{}' into a number", c))))
-        .collect::<Result<Vec<_>, Error>>()
+        .map(|c| c.to_digit(10).ok_or(ParseError::new(&format!("Could not parse '{}' into a number", c))))
+        .collect::<Result<Vec<_>, ParseError>>()
 }
 
 fn sum_of_repeating_numbers(v: &Vec<u32>, lookahead: usize) -> u32 {
@@ -24,18 +23,15 @@ fn sum_of_immediately_repeating_numbers(v: &Vec<u32>) -> u32 {
     sum_of_repeating_numbers(v, 1)
 }
 
-pub fn problem1() -> Result<(), Error> {
-    let numbers = load_numbers()?;
-    let result = sum_of_immediately_repeating_numbers(&numbers);
+#[aoc(day1, part1)]
+fn problem1(numbers: &Vec<u32>) -> Result<u32, ParseError> {
+    let result = sum_of_immediately_repeating_numbers(numbers);
 
-    println!("1/1: sum of numbers that appear twice: {}", result);
-
-    Ok(())
+    Ok(result)
 }
 
-pub fn problem2() -> Result<(), Error> {
-    let numbers = load_numbers()?;
-
+#[aoc(day1, part2)]
+fn problem2(numbers: &Vec<u32>) -> Result<u32, ParseError> {
     if numbers.len() % 2 != 0 {
         panic!("Invalid input: Number of digits has to be even");
     }
@@ -43,9 +39,7 @@ pub fn problem2() -> Result<(), Error> {
     let lookahead = numbers.len() / 2;
     let result = sum_of_repeating_numbers(&numbers, lookahead);
 
-    println!("1/2: sum of numbers that appear twice: {}", result);
-
-    Ok(())
+    Ok(result)
 }
 
 #[cfg(test)]

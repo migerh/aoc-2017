@@ -1,7 +1,6 @@
 use crate::utils::ParseError;
 use std::num::ParseIntError;
 use std::cmp::Ordering;
-use crate::utils::Error;
 
 fn parse_line(s: &str) -> Result<Vec<i32>, ParseIntError> {
     s.split('\t')
@@ -9,9 +8,8 @@ fn parse_line(s: &str) -> Result<Vec<i32>, ParseIntError> {
         .collect::<Result<Vec<_>, ParseIntError>>()
 }
 
-fn get_input() -> Result<Vec<i32>, ParseError> {
-    let input = include_str!("./input");
-
+#[aoc_generator(day6)]
+fn get_input(input: &str) -> Result<Vec<i32>, ParseError> {
     input
         .lines()
         .map(|l| parse_line(l))
@@ -68,22 +66,18 @@ fn repeated_redistribution(input: &Vec<i32>) -> (usize, usize) {
     (count, cycle)
 }
 
-pub fn problem1() -> Result<(), ParseError> {
-    let input = get_input()?;
+#[aoc(day6, part1)]
+pub fn problem1(input: &Vec<i32>) -> Result<usize, ParseError> {
+    let (result, _) = repeated_redistribution(input);
 
-    let (result, _) = repeated_redistribution(&input);
-    println!("6/1: # of iterations: {}", result);
-
-    Ok(())
+    Ok(result)
 }
 
-pub fn problem2() -> Result<(), Error> {
-    let input = get_input()?;
-
+#[aoc(day6, part2)]
+pub fn problem2(input: &Vec<i32>) -> Result<usize, ParseError> {
     let (_, cycle) = repeated_redistribution(&input);
-    println!("6/2: cycle size: {}", cycle);
 
-    Ok(())
+    Ok(cycle)
 }
 
 #[cfg(test)]
@@ -93,7 +87,7 @@ mod test {
     #[test]
     pub fn example_1_1() {
         let input = vec![0, 2, 7, 0];
-        assert_eq!(5, repeated_redistribution(&input));
+        assert_eq!((5, 4), repeated_redistribution(&input));
     }
 
     #[test]

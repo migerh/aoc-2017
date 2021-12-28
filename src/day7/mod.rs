@@ -2,7 +2,6 @@ use std::collections::HashMap;
 use regex::Regex;
 use crate::utils::ParseError;
 use std::str::FromStr;
-use crate::utils::Error;
 
 #[derive(Debug, Clone)]
 struct Entry {
@@ -26,10 +25,8 @@ impl FromStr for Entry {
         Ok(Self { program, weight, subs })
     }
 }
-fn get_input() -> &'static str {
-    include_str!("./example")
-}
 
+#[aoc_generator(day7)]
 fn parse_input(s: &str) -> Result<Vec<Entry>, ParseError> {
     s.lines()
         .map(|l| Entry::from_str(l))
@@ -53,9 +50,8 @@ fn build_top_to_bottom_tree(entries: &Vec<Entry>) -> HashMap<&str, Vec<&str>> {
     map
 }
 
-pub fn problem1() -> Result<(), Error> {
-    let input = get_input();
-    let entries = parse_input(input)?;
+#[aoc(day7, part1)]
+fn problem1(entries: &Vec<Entry>) -> Result<String, ParseError> {
     let tree = build_top_to_bottom_tree(&entries);
 
     let root = tree.iter()
@@ -66,7 +62,7 @@ pub fn problem1() -> Result<(), Error> {
 
     println!("7/1: Root node is: {}", root);
 
-    Ok(())
+    Ok(root.to_string())
 }
 
 fn build_lookup_table(entries: &Vec<Entry>) -> HashMap<&str, (Entry, i32, i32)> {
@@ -84,16 +80,13 @@ fn build_lookup_table(entries: &Vec<Entry>) -> HashMap<&str, (Entry, i32, i32)> 
 
 // }
 
-pub fn problem2() -> Result<(), Error> {
-    let input = get_input();
-    let entries = parse_input(input)?;
+#[aoc(day7, part2)]
+fn problem2(entries: &Vec<Entry>) -> Result<usize, ParseError> {
     let lut = build_lookup_table(&entries);
 
+    // println!("{:?}", lut);
 
-
-    println!("{:?}", lut);
-
-    Ok(())
+    Ok(0)
 }
 
 #[cfg(test)]

@@ -1,10 +1,8 @@
 use std::num::ParseIntError;
 use crate::utils::ParseError;
-use crate::utils::Error;
 
-fn get_input() -> Result<Vec<i32>, ParseError> {
-    let input = include_str!("./input");
-
+#[aoc_generator(day5)]
+fn get_input(input: &str) -> Result<Vec<i32>, ParseError> {
     let jumps = input
         .lines()
         .map(|l| l.parse::<i32>())
@@ -39,8 +37,9 @@ fn jump<F>(pos: usize, jumps: &mut Vec<i32>, update: F) -> Option<usize>
     }
 }
 
-pub fn problem1() -> Result<(), Error> {
-    let mut input = get_input()?;
+#[aoc(day5, part1)]
+pub fn problem1(input: &Vec<i32>) -> Result<i32, ParseError> {
+    let mut input = input.clone();
     let mut counter = 0;
     let mut pos = 0;
 
@@ -55,9 +54,7 @@ pub fn problem1() -> Result<(), Error> {
         };
     }
 
-    println!("5/1: # of jumps: {}", counter);
-
-    Ok(())
+    Ok(counter)
 }
 
 fn update_part_2(v: i32) -> i32 {
@@ -68,8 +65,9 @@ fn update_part_2(v: i32) -> i32 {
     }
 }
 
-pub fn problem2() -> Result<(), Error> {
-    let mut input = get_input()?;
+#[aoc(day5, part2)]
+pub fn problem2(input: &Vec<i32>) -> Result<i32, ParseError> {
+    let mut input = input.clone();
     let mut counter = 0;
     let mut pos = 0;
 
@@ -84,9 +82,7 @@ pub fn problem2() -> Result<(), Error> {
         };
     }
 
-    println!("5/2: # of jumps: {}", counter);
-
-    Ok(())
+    Ok(counter)
 }
 
 #[cfg(test)]

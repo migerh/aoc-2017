@@ -8,8 +8,9 @@ fn parse_line(line: &str) -> Result<Vec<i32>, ParseIntError> {
         .collect::<Result<Vec<_>, ParseIntError>>()
 }
 
-fn get_input() -> Result<Vec<Vec<i32>>, ParseIntError> {
-    include_str!("./input")
+#[aoc_generator(day2)]
+fn get_input(input: &str) -> Result<Vec<Vec<i32>>, ParseIntError> {
+    input
         .lines()
         .map(|l| parse_line(l))
         .collect::<Result<Vec<_>, ParseIntError>>()
@@ -33,13 +34,11 @@ fn checksum(matrix: &Vec<Vec<i32>>) -> i32 {
         .sum()
 }
 
-pub fn problem1() -> Result<(), ParseError> {
-    let input = get_input()?;
-
+#[aoc(day2, part1)]
+pub fn problem1(input: &Vec<Vec<i32>>) -> Result<i32, ParseError> {
     let result = checksum(&input);
-    println!("2/1: checksum is: {}", result);
 
-    Ok(())
+    Ok(result)
 }
 
 fn reduce_row(v: &Vec<i32>) -> Option<i32> {
@@ -65,13 +64,11 @@ fn divider_checksum(v: &Vec<Vec<i32>>) -> i32 {
         .sum()
 }
 
-pub fn problem2() -> Result<(), ParseError> {
-    let input = get_input()?;
-
+#[aoc(day2, part2)]
+pub fn problem2(input: &Vec<Vec<i32>>) -> Result<i32, ParseError> {
     let result = divider_checksum(&input);
-    println!("2/2: division based checksum: {}", result);
 
-    Ok(())
+    Ok(result)
 }
 
 #[cfg(test)]
