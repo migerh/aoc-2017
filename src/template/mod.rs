@@ -1,7 +1,7 @@
 use crate::utils::ParseError;
 
 #[aoc_generator(dayXX)]
-fn get_input() -> Result<isize, ParseError> {
+fn get_input(input: &str) -> Result<isize, ParseError> {
     Ok(0)
 }
 
