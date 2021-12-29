@@ -50,51 +50,96 @@ fn build_top_to_bottom_tree(entries: &Vec<Entry>) -> HashMap<&str, Vec<&str>> {
     map
 }
 
-#[aoc(day7, part1)]
-fn problem1(entries: &Vec<Entry>) -> Result<String, ParseError> {
-    let tree = build_top_to_bottom_tree(&entries);
-
+fn find_root<'a>(tree: &HashMap<&'a str, Vec<&'a str>>) -> Result<&'a str, ParseError> {
     let root = tree.iter()
         .filter(|(_, v)| v.is_empty())
         .map(|(k, _)| k)
         .next()
-        .ok_or(ParseError::new("Could not find anode with no parents."))?;
+        .ok_or(ParseError::new("Could not find a node with no parents."))?;
 
-    println!("7/1: Root node is: {}", root);
+    Ok(root)
+}
+
+#[aoc(day7, part1)]
+fn problem1(entries: &Vec<Entry>) -> Result<String, ParseError> {
+    let tree = build_top_to_bottom_tree(&entries);
+    let root = find_root(&tree)?;
 
     Ok(root.to_string())
 }
 
-fn build_lookup_table(entries: &Vec<Entry>) -> HashMap<&str, (Entry, i32, i32)> {
-    let mut map: HashMap<&str, (Entry, i32, i32)> = HashMap::new();
+fn bottom_up_tree(entries: &Vec<Entry>) -> HashMap<&str, (&Entry, usize)> {
+    let mut tree = HashMap::new();
 
     for e in entries {
-        map.entry(&e.program)
-            .or_insert((e.clone(), 0, 0));
+        tree.entry(e.program.as_str()).or_insert((e, 0));
     }
-
-    map
+    tree
 }
 
-// fn score_tree(root: &tree: &mut HashMap<&str, (Entry, i32, i32)>) {
+fn calculate_weights<'a>(mut entries: &mut HashMap<&'a str, (&'a Entry, usize)>, node: &'a str) -> Result<usize, ParseError> {
+    let (entry, _) = entries.get(node).ok_or(ParseError::new("Could not find node"))?.clone();
 
-// }
+    let mut sum = 0;
+    for s in &entry.subs {
+        sum += calculate_weights(&mut entries, s.as_str())?;
+    }
+
+    sum += entry.weight as usize;
+    entries.entry(node).and_modify(|v| v.1 = sum);
+
+    Ok(sum)
+}
+
+fn compare_weights<'a>(entries: &'a Vec<String>, tree: &'a HashMap<&'a str, (&'a Entry, usize)>) -> Result<Option<(&'a str, usize)>, ParseError> {
+    let entry_weights = entries.iter()
+        .map(|e| tree.get(e.as_str()).ok_or(ParseError::new("Cannot find node")))
+        .collect::<Result<Vec<_>, ParseError>>()?;
+
+    let mut histogram: HashMap<usize, Vec<&str>> = HashMap::new();
+
+    for (e, w) in entry_weights.into_iter() {
+        histogram.entry(*w).and_modify(|v| v.push(e.program.as_str())).or_insert(vec![e.program.as_str()]);
+    }
+
+    let single = histogram.iter().filter(|(_, v)| v.len() == 1).count();
+    let rest: usize = histogram.iter().filter(|(_, v)| v.len() != 1).map(|(_, v)| v.len()).sum();
+
+    if rest == entries.len() && single == 0 {
+        return Ok(None);
+    }
+
+    if rest == entries.len() - 1 && single == 1 {
+        let single = histogram.iter().filter(|(_, v)| v.len() == 1).map(|(_, v)| v).next().unwrap();
+
+        let target = tree.get(single[0]).unwrap();
+        let keys = histogram.keys().collect::<Vec<_>>();
+        let sub = (*keys[0] as isize - *keys[1] as isize).abs() as usize;
+        return Ok(Some((single[0], (target.0.weight as usize) - sub)));
+    }
+
+    Err(ParseError::new("Something went wrong"))
+}
 
 #[aoc(day7, part2)]
 fn problem2(entries: &Vec<Entry>) -> Result<usize, ParseError> {
-    let lut = build_lookup_table(&entries);
+    let tree = build_top_to_bottom_tree(&entries);
+    let root = find_root(&tree)?;
 
-    // println!("{:?}", lut);
+    let mut tree = bottom_up_tree(entries);
+    let mut target = calculate_weights(&mut tree, root)?;
 
-    Ok(0)
-}
+    let mut queue = vec![root];
 
-#[cfg(test)]
-mod test {
-    use super::*;
-
-    #[test]
-    pub fn example_1_1() {
-        assert_eq!(0, 0);
+    while let Some(q) = queue.pop() {
+        let (node, _) = tree.get(q).ok_or(ParseError::new("Cant find node"))?;
+        if let Some((next, next_target)) = compare_weights(&node.subs, &tree)? {
+            target = next_target;
+            queue.push(next);
+        } else {
+            break;
+        }
     }
+
+    Ok(target)
 }
