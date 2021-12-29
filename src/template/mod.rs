@@ -1,25 +1,18 @@
-use crate::utils::Error;
+use crate::utils::ParseError;
 
-fn get_input() -> Result<&'static str, Error> {
-    let input = include_str!("./input");
-
-    Ok(input)
+#[aoc_generator(dayXX)]
+fn get_input() -> Result<isize, ParseError> {
+    Ok(0)
 }
 
-pub fn problem1() -> Result<(), Error> {
-    let input = get_input()?;
-
-    println!("input: {}", input);
-
-    Ok(())
+#[aoc(dayXX, part1)]
+fn problem1(input: &isize) -> Result<usize, ParseError> {
+    Ok(0)
 }
 
-pub fn problem2() -> Result<(), Error> {
-    let input = get_input()?;
-
-    println!("input: {}", input);
-
-    Ok(())
+#[aoc(dayXX, part2)]
+fn problem2(input: &isize) -> Result<usize, ParseError> {
+    Ok(0)
 }
 
 #[cfg(test)]
