@@ -1,8 +1,7 @@
 use std::num::ParseIntError;
 use crate::utils::ParseError;
 
-#[aoc_generator(day10)]
-fn get_input(input: &str) -> Result<Vec<usize>, ParseError> {
+fn parse_part1(input: &str) -> Result<Vec<usize>, ParseError> {
     Ok(input
         .split(",")
         .map(|v| v.parse::<usize>())
@@ -25,31 +24,48 @@ fn tick(v: &Vec<usize>, pos: usize, length: usize) -> Vec<usize> {
 }
 
 #[aoc(day10, part1)]
-fn problem1(input: &Vec<usize>) -> Result<usize, ParseError> {
+fn problem1(input: &str) -> Result<usize, ParseError> {
+    let input = parse_part1(input)?;
     let mut vec = init(256);
     let mut pos = 0;
     let mut skip = 0;
 
     for l in input {
-        vec = tick(&vec, pos, *l);
-        pos = (pos + *l + skip) % vec.len();
+        vec = tick(&vec, pos, l);
+        pos = (pos + l + skip) % vec.len();
         skip += 1;
     }
 
     Ok(vec[0] * vec[1])
 }
 
-#[aoc(day10, part2)]
-fn problem2(input: &Vec<usize>) -> Result<usize, ParseError> {
-    Ok(0)
+fn hashify(raw: &Vec<usize>) -> String {
+    let mut dense = vec![];
+    for i in 0..16 {
+        let digit = raw.iter().skip(i * 16).take(16).fold(0, |acc, v| acc ^ v);
+        dense.push(digit);
+    }
+
+    dense.iter().map(|v| format!("{:02x}", v)).collect::<String>()
 }
 
-#[cfg(test)]
-mod test {
-    use super::*;
+#[aoc(day10, part2)]
+fn problem2(input: &str) -> Result<String, ParseError> {
+    let mut lengths = input.trim().chars().map(|c| c as usize).collect::<Vec<_>>();
+    let mut append = vec![17, 31, 73, 47, 23];
+    lengths.append(&mut append);
 
-    #[test]
-    pub fn example_1_1() {
-        assert_eq!(0, 0);
+    let mut vec = init(256);
+    let mut pos = 0;
+    let mut skip = 0;
+
+    for _ in 0..64 {
+        for l in &lengths {
+            vec = tick(&vec, pos, *l);
+            pos = (pos + *l + skip) % vec.len();
+            skip += 1;
+        }
     }
+
+    Ok(hashify(&vec))
 }
