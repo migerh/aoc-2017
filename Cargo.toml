@@ -12,6 +12,7 @@ opt-level = 3      # controls the `--opt-level` the compiler builds with.
 
 [profile.release]
 opt-level = 3
+debug = 1
 
 [dependencies]
 itertools = "0.10.0"
