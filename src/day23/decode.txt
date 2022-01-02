@@ -1,0 +1,37 @@
+// init for part 1
+b = 65
+c = b
+if a != 0 goto A
+
+goto B
+
+// init for part 2
+A:
+// b = 106500
+// c = 123500
+b = b*100 + 100_000
+c = b + 17000
+
+// part 1
+b = 65
+c = 65
+
+// part 2
+b = 106500
+c = 123500
+
+for b in (106500..=123500).step_by(17) {
+    f = false
+
+    for d in 2..b {
+        for e in 2..b {
+            if b == d*e {
+                f = true
+            }
+        }
+    }
+
+    if f {
+        h += 1
+    }
+}
